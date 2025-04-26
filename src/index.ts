@@ -1,4 +1,4 @@
-import express, { ErrorRequestHandler } from 'express';
+import express, { ErrorRequestHandler, NextFunction } from 'express';
 import auth from '#routes/auth.js';
 
 const app = express();
@@ -22,7 +22,7 @@ app.use((req, res) => {
 
 app.use(((err, req, res, next) => {
     console.log(err.message);
-    if (err.status === 400) {
+    if (err instanceof SyntaxError) {
         return res.status(400).json({ errors: ['Invalid JSON'] });
     }
 
