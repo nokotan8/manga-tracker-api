@@ -1,15 +1,14 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import auth from '#routes/auth.js';
+
 const app = express();
 const port = '9292';
 
 app.use(express.json());
 app.use((req, res, next) => {
     console.log(`[${new Date().toLocaleString()}] ${req.method} ${req.originalUrl}`);
-    next(); // Pass control to the next middleware
+    next();
 });
-
-app.get('/', (req: Request, res: Response) => {});
 
 app.use('/auth', auth);
 
