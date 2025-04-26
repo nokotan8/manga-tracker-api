@@ -17,13 +17,13 @@ app.use('/auth', auth);
 
 app.use((req, res) => {
     // Unmatched route
-    res.status(404).json({ errors: [`Route ${req.url} does not exist`]})
-})
+    res.status(404).json({ errors: [`Route ${req.url} does not exist`] });
+});
 
 app.use(((err, req, res, next) => {
     console.log(err.message);
     if (err.status === 400) {
-        return res.status(400).json({ errors: ['Invalid JSON'] })
+        return res.status(400).json({ errors: ['Invalid JSON'] });
     }
 
     res.status(500).json({ message: 'Internal server error' });
