@@ -1,8 +1,8 @@
-import express, { ErrorRequestHandler, NextFunction } from 'express';
-import auth from '#routes/auth.js';
+import express, { ErrorRequestHandler, NextFunction } from "express";
+import auth from "#routes/auth.js";
 
 const app = express();
-const port = '9292';
+const port = "9292";
 
 app.use(express.json());
 
@@ -13,7 +13,7 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use('/auth', auth);
+app.use("/auth", auth);
 
 app.use((req, res) => {
     // Unmatched route
@@ -23,10 +23,10 @@ app.use((req, res) => {
 app.use(((err, req, res, next) => {
     console.log(err.message);
     if (err instanceof SyntaxError) {
-        return res.status(400).json({ errors: ['Invalid JSON'] });
+        return res.status(400).json({ errors: ["Invalid JSON"] });
     }
 
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: "Internal server error" });
 }) as ErrorRequestHandler);
 
 app.listen(port, () => {
