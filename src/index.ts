@@ -1,9 +1,28 @@
 import express, { ErrorRequestHandler, NextFunction } from "express";
+import mysql, { ConnectionOptions } from "mysql2/promise";
+import cors from "cors";
 import auth from "#routes/auth.js";
 
 const app = express();
 const port = "9292";
 
+const access: ConnectionOptions = {
+    socketPath: "/var/run/mysqld/mysqld.sock",
+    host: process.env.DB_HOST,
+    port: parseInt(process.env.DB_PORT || "3306"),
+    database: process.env.DB,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+};
+
+app.locals.conn = await mysql.createConnection(access);
+
+app.use(
+    cors({
+        origin: "http://127.0.0.1:9291",
+        optionsSuccessStatus: 200,
+    }),
+);
 app.use(express.json());
 
 app.use((req, res, next) => {
@@ -23,10 +42,10 @@ app.use((req, res) => {
 app.use(((err, req, res, next) => {
     console.log(err.message);
     if (err instanceof SyntaxError) {
-        return res.status(400).json({ errors: ["Invalid JSON"] });
+        res.status(400).json({ errors: ["Invalid JSON"] });
+    } else {
+        res.status(500).json({ message: "Internal server error" });
     }
-
-    res.status(500).json({ message: "Internal server error" });
 }) as ErrorRequestHandler);
 
 app.listen(port, () => {
