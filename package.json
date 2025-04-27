@@ -23,7 +23,7 @@
         "argon2": "^0.43.0",
         "express": "^5.1.0",
         "express-validator": "^7.2.1",
-        "mysql": "^2.18.1"
+        "mysql2": "^3.14.1"
     },
     "devDependencies": {
         "@tsconfig/node22": "^22.0.1",

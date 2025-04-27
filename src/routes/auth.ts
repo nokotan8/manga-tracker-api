@@ -1,4 +1,5 @@
 import express, { Request, Response, Router } from "express";
+import mysql
 import { body, Result, validationResult } from "express-validator";
 
 const router: Router = express.Router();
