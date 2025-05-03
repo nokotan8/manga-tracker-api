@@ -2,7 +2,9 @@ import express, { ErrorRequestHandler } from "express";
 import mysql, { ConnectionOptions } from "mysql2/promise";
 import cors from "cors";
 import auth from "#routes/auth/auth.js";
+import listManga from "#routes/mangalist/manga/listManga.js";
 import { AppError } from "#errors/AppError.js";
+import { validateToken } from "#routes/auth/verifyToken.js";
 
 const app = express();
 const port = "9292";
@@ -21,7 +23,7 @@ app.locals.conn = await mysql.createConnection(access);
 // Allow frontend
 app.use(
     cors({
-        origin: "http://127.0.0.1:9291",
+        origin: "http://localhost:9291",
         optionsSuccessStatus: 200,
     }),
 );
@@ -36,19 +38,22 @@ app.use((req, res, next) => {
 
 app.use("/auth", auth);
 
+app.use(validateToken);
+
+app.use("/mangalist/manga", listManga);
+
 app.use((req, res) => {
     // Unmatched route
     res.status(404).json({ errors: [`Route ${req.url} does not exist`] });
 });
 
 app.use(((err, _req, res, _next) => {
-    console.log(err.message);
     if (err instanceof SyntaxError) {
         res.status(400).json({ errors: ["Invalid JSON"] });
     } else if (err instanceof AppError) {
         res.status(err.status).json({ errors: [err.message] });
     } else {
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ errors: ["Internal server error"] });
     }
 }) as ErrorRequestHandler);
 
