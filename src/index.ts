@@ -36,8 +36,10 @@ app.use((req, res, next) => {
     next();
 });
 
+/* Login/register routes */
 app.use("/auth", auth);
 
+/* Validate JWT for all other routes */
 app.use(validateToken);
 
 app.use("/mangalist/manga", listManga);
