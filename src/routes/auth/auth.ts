@@ -83,7 +83,6 @@ router.post(
                 [nanoid(), data.username, await argon2.hash(data.password)],
             );
         } catch (err: any) {
-            console.log(err);
             if (err.code === "ER_DUP_ENTRY") {
                 throw new AppError(400, "Username already exists");
             } else {
