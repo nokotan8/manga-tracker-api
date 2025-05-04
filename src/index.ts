@@ -4,6 +4,7 @@ import cors from "cors";
 import auth from "#routes/auth/auth.js";
 import manga from "#routes/manga/manga.js";
 import listManga from "#routes/mangalist/manga/listManga.js";
+import mangaLists from "#routes/mangalist/lists/mangaLists.js";
 import { AppError } from "#errors/AppError.js";
 import { validateToken } from "#routes/auth/verifyToken.js";
 
@@ -47,18 +48,24 @@ app.use("/manga", manga);
 
 app.use("/mangalist/manga", listManga);
 
+app.use("/mangalist", mangaLists);
+
 app.use((req, res) => {
     // Unmatched route
     res.status(404).json({ errors: [`Route ${req.url} does not exist`] });
 });
 
 app.use(((err, _req, res, _next) => {
+    console.log(err);
     if (err instanceof SyntaxError) {
         res.status(400).json({ errors: ["Invalid JSON"] });
+        return;
     } else if (err instanceof AppError) {
         res.status(err.status).json({ errors: [err.message] });
+        return;
     } else {
         res.status(500).json({ errors: ["Internal server error"] });
+        return;
     }
 }) as ErrorRequestHandler);
 
