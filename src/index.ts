@@ -2,6 +2,7 @@ import express, { ErrorRequestHandler } from "express";
 import mysql, { ConnectionOptions } from "mysql2/promise";
 import cors from "cors";
 import auth from "#routes/auth/auth.js";
+import manga from "#routes/manga/manga.js";
 import listManga from "#routes/mangalist/manga/listManga.js";
 import { AppError } from "#errors/AppError.js";
 import { validateToken } from "#routes/auth/verifyToken.js";
@@ -41,6 +42,8 @@ app.use("/auth", auth);
 
 /* Validate JWT for all other routes */
 app.use(validateToken);
+
+app.use("/manga", manga);
 
 app.use("/mangalist/manga", listManga);
 

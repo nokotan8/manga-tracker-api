@@ -4,12 +4,13 @@ import { body, matchedData, Result, validationResult } from "express-validator";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 import * as argon2 from "argon2";
 import jwt from "jsonwebtoken";
+import { nanoid } from "nanoid";
 
 const router: Router = express.Router();
 
 // const getUsernameQuery = "SELECT * FROM Users WHERE Username = ?";
 const getUserQuery = "SELECT Username, Password FROM Users WHERE Username = ?";
-const addUserQuery = "INSERT INTO Users (Username, Password) Values (?, ?)";
+const addUserQuery = "INSERT INTO Users Values (?, ?, ?)";
 
 /* POST /auth/login */
 router.post(
@@ -79,9 +80,10 @@ router.post(
         try {
             let [_resHeaders, _1] = await conn.execute<ResultSetHeader>(
                 addUserQuery,
-                [data.username, await argon2.hash(data.password)],
+                [nanoid(), data.username, await argon2.hash(data.password)],
             );
         } catch (err: any) {
+            console.log(err);
             if (err.code === "ER_DUP_ENTRY") {
                 throw new AppError(400, "Username already exists");
             } else {
