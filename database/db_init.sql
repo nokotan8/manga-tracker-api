@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS Genres (
 
 CREATE TABLE IF NOT EXISTS MangaLists (
     Id VARCHAR(32),
-    Name TEXT NOT NULL,
+    Name TEXT UNIQUE NOT NULL,
     Owner Varchar(32) NOT NULL,
 
     PRIMARY KEY (Id)
