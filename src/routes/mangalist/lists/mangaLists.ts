@@ -5,13 +5,14 @@ import { nanoid } from "nanoid";
 
 const router: Router = express.Router();
 
-/* POST /mangalist */
+/* POST /mangalist/list */
 router.post("/", async (req, res) => {
     if (!req.body.name) {
         throw new AppError(400, "Name not provided");
     }
 
-    const addListQuery = "INSERT INTO MangaLists VALUES(?, ?, ?)";
+    const addListQuery =
+        "INSERT INTO MangaLists (Id, Name, Owner) VALUES(?, ?, ?)";
     const conn = req.app.locals.conn;
     const listId = nanoid();
 
@@ -36,7 +37,7 @@ router.post("/", async (req, res) => {
     res.json({ listId: listId });
 });
 
-/* GET /mangalist */
+/* GET /mangalist/list */
 router.get("/", async (req, res) => {
     const conn = req.app.locals.conn;
     const getListsQuery = "SELECT Id, Name FROM MangaLists WHERE Owner=?";
@@ -58,11 +59,63 @@ router.get("/", async (req, res) => {
     });
 });
 
-/* GET /mangalist/all */
+/* GET /mangalist/list/all */
+router.get("/all", async (req, res) => {
+    const conn = req.app.locals.conn;
+    const getAllEntriesQuery = `
+        SELECT ListEntry.Id as EntryId, Manga.Id as MangaId, TitleEN, TitleJP, Chapters, ChaptersRead, Volumes, VolumesRead, PublicationStatus
+        FROM Manga JOIN ListEntry ON Manga.Id = ListEntry.isManga
+        WHERE ListEntry.Owner = ?
+    `;
 
-/* GET /mangalist/:listId */
+    let [entries, _1] = await conn.execute<RowDataPacket[]>(
+        getAllEntriesQuery,
+        [res.locals.userId],
+    );
 
-/* POST /mangalist/:listId */
+    const resEntries = [];
+    for (const entry of entries) {
+        resEntries.push({
+            entryId: entry.EntryId,
+            mangaId: entry.MangaId,
+            titleEN: entry.TitleEN,
+            titleJP: entry.TitleJP,
+            chaps: entry.Chapters,
+            chapsRead: entry.ChaptersRead,
+            vols: entry.Volumes,
+            volsRead: entry.VolumesRead,
+            pubStatus: entry.PublicationStatus,
+        });
+    }
+    res.json({
+        listEntries: resEntries,
+    });
+});
+
+/* GET /mangalist/list/:listId */
+
+/* POST /mangalist/list/:listId */
+router.post("/:listId", async (req, res) => {
+    const conn = req.app.locals.conn;
+    const addToListQuery =
+        "INSERT INTO InList (ListEntry, EntryIn) VALUES (?, ?)";
+
+    if (!req.body.listEntry) {
+        throw new AppError(404, "No list entry specified");
+    }
+
+    try {
+        await conn.execute(addToListQuery, [
+            req.body.listEntry,
+            req.params.listId,
+        ]);
+    } catch (err) {
+        console.log(err);
+        throw new AppError(404, "Specified list or list entry does not exist");
+    }
+
+    res.json({});
+});
 
 /* DELETE /mangalist/:listId/:mangaId */
 

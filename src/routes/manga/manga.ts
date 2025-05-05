@@ -61,7 +61,12 @@ router.use(
             const genres: string[] = req.body.genres;
             if (genres.length) {
                 for (const genre of genres) {
-                    await conn.execute(addGenreQuery, [genre, mangaId]);
+                    if (genre.trim()) {
+                        await conn.execute(addGenreQuery, [
+                            genre.trim(),
+                            mangaId,
+                        ]);
+                    }
                 }
             }
         } catch (error) {
