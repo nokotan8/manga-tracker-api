@@ -43,17 +43,17 @@ router.post(
             ]);
         } catch (error) {
             console.log(error);
-            throw new AppError(404, "Bad info");
+            throw new AppError(404, "Specified mangaId does not exist");
         }
 
         res.json({ entryId: entryId });
     },
 );
 
-/* GET /mangalist/manga/:mangaId */
+/* GET /mangalist/manga/:entryId */
 
-/* PUT /mangalist/manga/:mangaId */
+/* PUT /mangalist/manga/:entryId */
 
-/* DELETE /mangalist/manga/:mangaId */
+/* DELETE /mangalist/manga/:entryId */
 
 export default router;
