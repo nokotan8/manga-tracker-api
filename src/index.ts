@@ -48,7 +48,7 @@ app.use("/manga", manga);
 
 app.use("/mangalist/manga", listManga);
 
-app.use("/mangalist/list", mangaLists);
+app.use("/mangalist/lists", mangaLists);
 
 app.use((req, res) => {
     // Unmatched route

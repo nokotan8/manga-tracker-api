@@ -5,7 +5,7 @@ import { nanoid } from "nanoid";
 
 const router: Router = express.Router();
 
-/* POST /mangalist/list */
+/* POST /mangalist/lists */
 router.post("/", async (req, res) => {
     if (!req.body.name) {
         throw new AppError(400, "Name not provided");
@@ -37,10 +37,10 @@ router.post("/", async (req, res) => {
     res.json({ listId: listId });
 });
 
-/* GET /mangalist/list */
+/* GET /mangalist/lists */
 router.get("/", async (req, res) => {
     const conn = req.app.locals.conn;
-    const getListsQuery = "SELECT Id, Name FROM MangaLists WHERE Owner=?";
+    const getListsQuery = "SELECT Id, Name FROM MangaLists WHERE Owner=? ORDER BY DateCreated";
 
     let [lists, _1] = await conn.execute<RowDataPacket[]>(getListsQuery, [
         res.locals.userId,
@@ -59,19 +59,55 @@ router.get("/", async (req, res) => {
     });
 });
 
-/* GET /mangalist/list/all */
-router.get("/all", async (req, res) => {
+/* GET /mangalist/lists/all */
+router.get("/:listId", async (req, res) => {
     const conn = req.app.locals.conn;
-    const getAllEntriesQuery = `
-        SELECT ListEntry.Id as EntryId, Manga.Id as MangaId, TitleEN, TitleJP, Chapters, ChaptersRead, Volumes, VolumesRead, PublicationStatus
-        FROM Manga JOIN ListEntry ON Manga.Id = ListEntry.isManga
-        WHERE ListEntry.Owner = ?
-    `;
+    const listId = req.params.listId;
+    let entries: RowDataPacket[] = [];
+    let _1;
+    if (listId === "all") {
+        const getAllEntriesQuery = `
+            SELECT ListEntry.Id as EntryId, Manga.Id as MangaId, TitleEN, TitleJP, Chapters, ChaptersRead, Volumes, VolumesRead, PublicationStatus
+            FROM Manga JOIN ListEntry ON Manga.Id = ListEntry.isManga
+            WHERE ListEntry.Owner = ?
+            ORDER BY ListEntry.DateCreated
+            `;
 
-    let [entries, _1] = await conn.execute<RowDataPacket[]>(
-        getAllEntriesQuery,
-        [res.locals.userId],
-    );
+        [entries, _1] = await conn.execute<RowDataPacket[]>(
+            getAllEntriesQuery,
+            [res.locals.userId],
+        );
+    } else if (
+        listId.toLowerCase() === "reading" ||
+        listId.toLowerCase() === "planned" ||
+        listId.toLowerCase() === "completed" ||
+        listId.toLowerCase() === "dropped"
+    ) {
+        const getStatusEntriesQuery = `
+            SELECT ListEntry.Id as EntryId, Manga.Id as MangaId, TitleEN, TitleJP, Chapters, ChaptersRead, Volumes, VolumesRead, PublicationStatus
+            FROM Manga JOIN ListEntry ON Manga.Id = ListEntry.isManga
+            WHERE ListEntry.Owner = ? AND ListEntry.ReadStatus = ?
+            ORDER BY ListEntry.DateCreated
+            `;
+
+        [entries, _1] = await conn.execute<RowDataPacket[]>(
+            getStatusEntriesQuery,
+            [res.locals.userId, listId.toLowerCase()],
+        );
+    } else {
+        const getListEntriesQuery = `
+            SELECT ListEntry.Id as EntryId, Manga.Id as MangaId, TitleEN, TitleJP, Chapters, ChaptersRead, Volumes, VolumesRead, PublicationStatus
+            FROM Manga JOIN ListEntry ON Manga.Id = ListEntry.isManga
+            JOIN InList ON InList.ListEntry = ListEntry.Id 
+            WHERE ListEntry.Owner = ? AND InList.EntryIn = ?
+            ORDER BY ListEntry.DateCreated
+            `;
+
+        [entries, _1] = await conn.execute<RowDataPacket[]>(
+            getListEntriesQuery,
+            [res.locals.userId, listId],
+        );
+    }
 
     const resEntries = [];
     for (const entry of entries) {
@@ -92,9 +128,9 @@ router.get("/all", async (req, res) => {
     });
 });
 
-/* GET /mangalist/list/:listId */
+/* GET /mangalist/lists/:listId */
 
-/* POST /mangalist/list/:listId */
+/* POST /mangalist/lists/:listId */
 router.post("/:listId", async (req, res) => {
     const conn = req.app.locals.conn;
     const addToListQuery =
