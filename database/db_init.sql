@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS MangaLists (
     Id VARCHAR(32),
     Name TEXT UNIQUE NOT NULL,
     Owner Varchar(32) NOT NULL,
+    DateCreated datetime DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (Id),
     FOREIGN KEY (Owner) REFERENCES Users (Id)
@@ -52,6 +53,7 @@ CREATE TABLE IF NOT EXISTS ListEntry (
     ReadStatus TEXT NOT NULL,
     Score SMALLINT,
     Notes TEXT,
+    DateCreated datetime DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (Id),
     FOREIGN KEY (IsManga) REFERENCES Manga (Id),
