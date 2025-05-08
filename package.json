@@ -26,7 +26,9 @@
         "express-validator": "^7.2.1",
         "jsonwebtoken": "^9.0.2",
         "mysql2": "^3.14.1",
-        "nanoid": "^5.1.5"
+        "nanoid": "^5.1.5",
+        "swagger-jsdoc": "^6.2.8",
+        "swagger-ui-express": "^5.0.1"
     },
     "devDependencies": {
         "@tsconfig/node22": "^22.0.1",
