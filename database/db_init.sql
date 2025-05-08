@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS Manga, Users, Genres, MangaLists, ListEntry, InList;
+-- DROP TABLE IF EXISTS Manga, Users, Genres, MangaLists, ListEntry, InList;
 
 CREATE TABLE IF NOT EXISTS Users (
     Id Varchar(32),
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS MangaLists (
     Id VARCHAR(32),
     Name TEXT UNIQUE NOT NULL,
     Owner Varchar(32) NOT NULL,
-    DateCreated datetime DEFAULT CURRENT_TIMESTAMP,
+    DateCreated Datetime DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (Id),
     FOREIGN KEY (Owner) REFERENCES Users (Id)
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS ListEntry (
     ReadStatus TEXT NOT NULL,
     Score SMALLINT,
     Notes TEXT,
-    DateCreated datetime DEFAULT CURRENT_TIMESTAMP,
+    DateCreated Datetime DEFAULT CURRENT_TIMESTAMP,
 
     PRIMARY KEY (Id),
     FOREIGN KEY (IsManga) REFERENCES Manga (Id),
@@ -70,25 +70,25 @@ CREATE TABLE IF NOT EXISTS InList (
     FOREIGN KEY (EntryIn) REFERENCES MangaLists (Id)
 );
 
-DELIMITER //
+DELIMITER / /
 CREATE TRIGGER InListInsert
 AFTER INSERT ON InList
 FOR EACH ROW
 BEGIN
-    DECLARE EntryOwner VARCHAR (32);
-    DECLARE ListOwner VARCHAR (32); 
+DECLARE EntryOwner VARCHAR (32) ;
+DECLARE ListOwner VARCHAR (32) ;
 
-    SELECT Owner INTO EntryOwner
-    FROM ListEntry
-    WHERE Id = NEW.ListEntry;
+SELECT Owner INTO EntryOwner
+FROM ListEntry
+WHERE Id = NEW.ListEntry ;
 
-    SELECT Owner INTO ListOwner
-    FROM MangaLists
-    WHERE Id = NEW.EntryIn;
+SELECT Owner INTO ListOwner
+FROM MangaLists
+WHERE Id = NEW.EntryIn ;
 
-    IF EntryOwner <> ListOwner THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'ListEntry and MangaList must have the same owner.';
-    END IF;
-END //
+IF EntryOwner < > ListOwner THEN
+SIGNAL SQLSTATE '45000'
+SET MESSAGE_TEXT = 'ListEntry and MangaList must have the same owner.' ;
+END IF ;
+END / /
 DELIMITER ;
