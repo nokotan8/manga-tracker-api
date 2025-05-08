@@ -52,7 +52,9 @@ app.use("/mangalist/lists", mangaLists);
 
 app.use((req, res) => {
     // Unmatched route
-    res.status(404).json({ errors: [`Route ${req.url} does not exist`] });
+    res.status(404).json({
+        errors: [`Route ${req.method} ${req.url} does not exist`],
+    });
 });
 
 app.use(((err, _req, res, _next) => {

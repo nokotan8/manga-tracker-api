@@ -160,6 +160,22 @@ router.post("/:listId", async (req, res) => {
     res.json({});
 });
 
-/* DELETE /mangalist/:listId/:mangaId */
+/* DELETE /mangalist/lists/:listId/:entryId */
+router.delete("/:listId/:entryId", async (req, res) => {
+    const conn = req.app.locals.conn;
+    const deleteFromListQuery =
+        "DELETE FROM InList WHERE EntryIn = ? AND ListEntry = ?";
 
+    try {
+        await conn.execute(deleteFromListQuery, [
+            req.params.listId,
+            req.params.entryId,
+        ]);
+    } catch (err) {
+        console.log(err);
+        throw new AppError(404, "Specified list or list entry does not exist");
+    }
+
+    res.json({ msg: "success" });
+});
 export default router;
