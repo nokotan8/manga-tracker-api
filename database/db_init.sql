@@ -70,25 +70,25 @@ CREATE TABLE IF NOT EXISTS InList (
     FOREIGN KEY (EntryIn) REFERENCES MangaLists (Id)
 );
 
-DELIMITER / /
+DELIMITER //
 CREATE TRIGGER InListInsert
 AFTER INSERT ON InList
 FOR EACH ROW
 BEGIN
-DECLARE EntryOwner VARCHAR (32) ;
-DECLARE ListOwner VARCHAR (32) ;
+    DECLARE EntryOwner VARCHAR (32);
+    DECLARE ListOwner VARCHAR (32);
 
-SELECT Owner INTO EntryOwner
-FROM ListEntry
-WHERE Id = NEW.ListEntry ;
+    SELECT Owner INTO EntryOwner
+    FROM ListEntry
+    WHERE Id = NEW.ListEntry;
 
-SELECT Owner INTO ListOwner
-FROM MangaLists
-WHERE Id = NEW.EntryIn ;
+    SELECT Owner INTO ListOwner
+    FROM MangaLists
+    WHERE Id = NEW.EntryIn;
 
-IF EntryOwner < > ListOwner THEN
-SIGNAL SQLSTATE '45000'
-SET MESSAGE_TEXT = 'ListEntry and MangaList must have the same owner.' ;
-END IF ;
-END / /
-DELIMITER ;
+    IF EntryOwner <> ListOwner THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'ListEntry and MangaList must have the same owner.';
+    END IF;
+END //
+DELIMITER;
