@@ -2,6 +2,9 @@
 
 Simple API for my [Manga Tracker](https://github.com/nokotan8/manga-tracker), built with ExpressJS and MySQL. Includes tables for storing general and user-specific information information about manga including reading progress and custom 'reading lists'.
 
+> [!IMPORTANT]
+> This project is 1. for fun and 2. a work in progress. Do not be surprised if something breaks.
+
 ## Usage
 
 1. Clone this repo:
@@ -37,7 +40,3 @@ Follow the setup instructions above and navigate to `/docs` to view the Swagger 
 
 > [!Important]
 > Most routes are yet to be documented
-
-## Disclaimer
-
-This project is 1. for fun and 2. a work in progress. Do not be surprised if something breaks.
