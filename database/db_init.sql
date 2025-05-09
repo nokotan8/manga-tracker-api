@@ -91,4 +91,4 @@ BEGIN
         SET MESSAGE_TEXT = 'ListEntry and MangaList must have the same owner.';
     END IF;
 END //
-DELIMITER;
+DELIMITER ;
