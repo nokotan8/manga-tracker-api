@@ -33,7 +33,10 @@ The SQL file for initialising the database can also be found [here](/database/db
 
 ## Routes
 
-TODO
+Follow the setup instructions above and navigate to `/docs` to view the Swagger documentation for the routes.
+
+> [!Important]
+> Most routes are yet to be documented
 
 ## Disclaimer
 

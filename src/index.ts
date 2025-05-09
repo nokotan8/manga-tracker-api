@@ -1,35 +1,17 @@
 import express, { ErrorRequestHandler } from "express";
 import mysql, { ConnectionOptions } from "mysql2/promise";
 import cors from "cors";
-import swaggerJsdoc from "swagger-jsdoc";
-import swaggerUi from "swagger-ui-express";
 import auth from "#routes/auth/auth.js";
 import manga from "#routes/manga/manga.js";
 import listManga from "#routes/mangalist/manga/listManga.js";
 import mangaLists from "#routes/mangalist/lists/mangaLists.js";
 import { AppError } from "#errors/AppError.js";
 import { validateToken } from "#routes/auth/verifyToken.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerDoc from "./swagger.json" with { type: "json" };
 
 const app = express();
 const port = "9292";
-
-const swaggerOpts = {
-    definition: {
-        openapi: "3.1.0",
-        info: {
-            title: "Manga Tracker API",
-            version: "0.1.0",
-            description:
-                "REST API for tracking users' manga reading progress and add them into predefined and custom lists",
-        },
-        servers: [
-            {
-                url: "http://localhost:9292",
-            },
-        ],
-    },
-    apis: ["./routes/**/*.{js,ts}"],
-};
 
 const access: ConnectionOptions = {
     socketPath: "/var/run/mysqld/mysqld.sock",
@@ -59,11 +41,10 @@ app.use((req, res, next) => {
     next();
 });
 
-const spec = swaggerJsdoc(swaggerOpts);
 app.get("/", (_req, res) => {
     res.redirect("/docs");
 });
-app.use("/docs", swaggerUi.serve, swaggerUi.setup(spec));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
 /* Login/register routes */
 app.use("/auth", auth);
