@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS Manga (
     Volumes INT,
     PublicationStatus TEXT NOT NULL,
     IsPublic BOOLEAN NOT NULL,
+    CHECK (YEAR > 0 AND YEAR < 9999),
 
     PRIMARY KEY (Id),
     FOREIGN KEY (Owner) REFERENCES Users (Id)
@@ -36,7 +37,7 @@ CREATE TABLE IF NOT EXISTS Genres (
 
 CREATE TABLE IF NOT EXISTS MangaLists (
     Id VARCHAR(32),
-    Name TEXT UNIQUE NOT NULL,
+    Name TEXT NOT NULL,
     Owner Varchar(32) NOT NULL,
     DateCreated Datetime DEFAULT CURRENT_TIMESTAMP,
 
@@ -54,6 +55,7 @@ CREATE TABLE IF NOT EXISTS ListEntry (
     Score SMALLINT,
     Notes TEXT,
     DateCreated Datetime DEFAULT CURRENT_TIMESTAMP,
+    CHECK (Score >= -1 AND Score <= 10),
 
     PRIMARY KEY (Id),
     FOREIGN KEY (IsManga) REFERENCES Manga (Id),
