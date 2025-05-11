@@ -10,8 +10,6 @@ const router: Router = express.Router();
 router.post(
     "/",
     body("mangaId").notEmpty(),
-    body("chapsRead").if(body("chapsRead").notEmpty()).isInt(),
-    body("volsRead").if(body("volsRead").notEmpty()).isInt(),
     body("score").if(body("score").notEmpty()).isInt({ min: 0, max: 10 }),
     body("readStatus").notEmpty(),
     async (req, res) => {

@@ -20,8 +20,6 @@ router.use(
     body("genres").isArray().withMessage("Genres must be an array"),
     body("year").isInt({ min: 0, max: 9999 }).withMessage("Enter a valid year"),
     body("isPublic").isBoolean().withMessage("Public status must exist"),
-    body("chapsTotal").if(body("chapsTotal").exists()).isInt(),
-    body("volsTotal").if(body("volsTotal").exists()).isInt(),
 
     async (req, res) => {
         const result: Result = validationResult(req);
