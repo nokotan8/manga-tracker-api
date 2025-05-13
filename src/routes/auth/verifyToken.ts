@@ -21,7 +21,9 @@ export const validateToken = [
         }
         const token = (req.headers.authorization as string).split(" ")[1];
         try {
-            jwt.verify(token, process.env.JWT_SECRET);
+            jwt.verify(token, process.env.JWT_SECRET, {
+                algorithms: ["HS256"],
+            });
             let username = JSON.parse(atob(token.split(".")[1])).username;
             const conn = req.app.locals.conn;
             const getUserQuery = "SELECT Id FROM Users WHERE Username = ?";
