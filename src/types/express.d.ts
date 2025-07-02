@@ -4,8 +4,9 @@ declare global {
     namespace Express {
         interface Locals {
             conn: Connection;
+            userId: string;
         }
     }
 }
 
-export {};
+export { };

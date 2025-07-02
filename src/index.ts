@@ -2,7 +2,13 @@ import express, { ErrorRequestHandler } from "express";
 import mysql, { ConnectionOptions } from "mysql2/promise";
 import cors from "cors";
 import auth from "#routes/auth/auth.js";
+import manga from "#routes/manga/manga.js";
+import listManga from "#routes/mangalist/manga/listManga.js";
+import mangaLists from "#routes/mangalist/lists/mangaLists.js";
 import { AppError } from "#errors/AppError.js";
+import { validateToken } from "#routes/auth/verifyToken.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerDoc from "./swagger.json" with { type: "json" };
 
 const app = express();
 const port = "9292";
@@ -21,12 +27,13 @@ app.locals.conn = await mysql.createConnection(access);
 // Allow frontend
 app.use(
     cors({
-        origin: "http://127.0.0.1:9291",
+        origin: "http://localhost:9291",
         optionsSuccessStatus: 200,
     }),
 );
 app.use(express.json());
 
+/* Logging */
 app.use((req, res, next) => {
     console.log(
         `[${new Date().toLocaleString()}] ${req.method} ${req.originalUrl} ${res.statusCode}`,
@@ -34,21 +41,41 @@ app.use((req, res, next) => {
     next();
 });
 
+app.get("/", (_req, res) => {
+    res.redirect("/docs");
+});
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+
+/* Login/register routes */
 app.use("/auth", auth);
+
+/* Validate JWT for all other routes */
+app.use(validateToken);
+
+app.use("/manga", manga);
+
+app.use("/mangalist/manga", listManga);
+
+app.use("/mangalist/lists", mangaLists);
 
 app.use((req, res) => {
     // Unmatched route
-    res.status(404).json({ errors: [`Route ${req.url} does not exist`] });
+    res.status(404).json({
+        errors: [`Route ${req.method} ${req.url} does not exist`],
+    });
 });
 
 app.use(((err, _req, res, _next) => {
-    console.log(err.message);
+    console.log(err);
     if (err instanceof SyntaxError) {
         res.status(400).json({ errors: ["Invalid JSON"] });
+        return;
     } else if (err instanceof AppError) {
         res.status(err.status).json({ errors: [err.message] });
+        return;
     } else {
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ errors: ["Internal server error"] });
+        return;
     }
 }) as ErrorRequestHandler);
 

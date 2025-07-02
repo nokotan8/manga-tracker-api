@@ -1,9 +1,9 @@
 declare global {
     namespace NodeJS {
         interface ProcessEnv {
-            JWT_TOKEN: string;
+            JWT_SECRET: jwt.SECRET;
         }
     }
 }
 
-export {};
+export { };
